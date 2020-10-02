@@ -21,7 +21,35 @@ const getAuction = (instance) => (tokenId) => {
     })
 }
 
+const getCurrentPrice = (instance) => (tokenId) => {
+    return instance.getCurrentPrice(tokenId).then((data) => {
+        return {
+            price: ethers.utils.formatEther(data)
+        }
+    }).catch((e) => {
+        if (e.code === 'CALL_EXCEPTION') {
+            return {}
+        } else {
+            throw e
+        }
+    })
+}
+
 module.exports = {
+    totalSupply() {
+        return contracts.entityCore.totalSupply().then((data) => {
+            return {
+                totalSupply: data.toNumber()
+            }
+        })
+    },
+    ownerOf(tokenId) {
+        return contracts.entityCore.ownerOf(tokenId).then((data) => {
+            return {
+                owner: data
+            }
+        })
+    },
     getEntity(tokenId) {
         return contracts.entityCore.getEntity(tokenId).then((data) => {
             return {
@@ -44,5 +72,11 @@ module.exports = {
     },
     getAuctionSeed(tokenId) {
         return getAuction(contracts.auctionSeed)(tokenId)
+    },
+    getCurrentPriceSell(tokenId) {
+        return getCurrentPrice(contracts.auctionSell)(tokenId)
+    },
+    getCurrentPriceSeed(tokenId) {
+        return getCurrentPrice(contracts.auctionSeed)(tokenId)
     }
 }

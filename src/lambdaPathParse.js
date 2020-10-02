@@ -1,15 +1,21 @@
-const methodTable = {
-    tons: 'getEntity',
-    shop: 'getAuctionSell',
-    breed: 'getAuctionSeed'
-}
-
 module.exports = {
     toContractCallParams(event) {
-        const [type, tokenId] = event.pathParameters.type.split('/')
-        return {
-            method: methodTable[type],
-            tokenId: Number(tokenId)
+        const splitted = event.pathParameters.type.split('/')
+        if (splitted.length === 2) {
+            const [type, tokenId] = splitted
+            return {
+                method: type,
+                args: [Number(tokenId)]
+            }
+        } else if (splitted.length === 1) {
+            const [type] = splitted
+            return {
+                method: type,
+                args: []
+            }
+        } else {
+            throw new Error()
         }
+
     }
 }
