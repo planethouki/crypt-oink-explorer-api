@@ -24,18 +24,32 @@ exports.handler = async (event) => {
             response.body = JSON.stringify({ ...owner, ...entity })
             break
         case 'shop':
-            const [auctionSell, priceSell] = await Promise.all([
-                functions.getAuctionSell(...args),
-                functions.getCurrentPriceSell(...args)
-            ])
-            response.body = JSON.stringify({ ...priceSell, ...auctionSell })
+            try {
+                const [auctionSell, priceSell] = await Promise.all([
+                    functions.getAuctionSell(...args),
+                    functions.getCurrentPriceSell(...args)
+                ])
+                response.body = JSON.stringify({ ...priceSell, ...auctionSell })
+            } catch (e) {
+                if (process.env.NODE_ENV === "development") {
+                    console.error(e)
+                }
+                response.statusCode = 204
+            }
             break
         case 'breed':
-            const [auctionSeed, priceSeed] = await Promise.all([
-                functions.getAuctionSeed(...args),
-                functions.getCurrentPriceSeed(...args)
-            ])
-            response.body = JSON.stringify({ ...priceSeed, ...auctionSeed })
+            try {
+                const [auctionSeed, priceSeed] = await Promise.all([
+                    functions.getAuctionSeed(...args),
+                    functions.getCurrentPriceSeed(...args)
+                ])
+                response.body = JSON.stringify({ ...priceSeed, ...auctionSeed })
+            } catch (e) {
+                if (process.env.NODE_ENV === "development") {
+                    console.error(e)
+                }
+                response.statusCode = 204
+            }
             break
         default:
             response.statusCode = 400
